@@ -28,7 +28,12 @@ namespace ActionGameTest
 
         public void Update()
         {
+            AddGravityToVelocity();
 
+
+        private void AddGravityToVelocity()
+        {
+            velocity -= new Vector2(0, gravityScale);
         }
     }
 }
