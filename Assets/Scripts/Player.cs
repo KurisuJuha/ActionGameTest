@@ -31,6 +31,7 @@ namespace ActionGameTest
             AddGravityToVelocity();
             Move();
             CheckOnWall();
+            ApplyVelocity();
 
         private void CheckOnWall()
         {
@@ -70,6 +71,10 @@ namespace ActionGameTest
             if (onGround && input.upDown) velocity = new Vector2(0, 1) * jumpPower;
         }
 
+        private void ApplyVelocity()
+        {
+            position += velocity;
+        }
 
         private void AddGravityToVelocity()
         {
