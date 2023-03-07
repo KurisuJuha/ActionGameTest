@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ActionGameTest.Physics
 {
-    public class Box
+    public struct Box
     {
         /// <summary>
         /// 左下の位置
