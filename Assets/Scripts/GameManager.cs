@@ -26,6 +26,8 @@ namespace ActionGameTest
             player.Update();
 
             SetView();
+        }
+
         private void RegisterFieldBoxes()
         {
             List<Box> boxes = new();
