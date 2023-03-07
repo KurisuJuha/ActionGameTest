@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using JuhaKurisu.PopoTools.Utility;
 using ActionGameTest.Physics;
+using UnityEngine;
 
 namespace ActionGameTest
 {
