@@ -32,6 +32,42 @@ namespace ActionGameTest
             Move();
             CheckOnWall();
             ApplyVelocity();
+            CheckOnGround();
+        }
+
+        private void CheckOnGround()
+        {
+            onGround = false;
+            Box upBox = new(position + new Vector2(0.05f, 1), new(0.8f, 0));
+            Box downBox = new(position + new Vector2(0.05f, 0), new(0.8f, 0));
+
+            foreach (var fieldBox in fieldBoxes)
+            {
+                if (fieldBox.IsHit(downBox))
+                {
+                    // 地面に当たっていることを示す
+                    onGround = true;
+
+                    // velocityを0に
+                    velocity = new();
+
+                    // めり込みの解消
+                    position = new(position.x, fieldBox.position.y + fieldBox.size.y);
+                }
+
+                if (fieldBox.IsHit(upBox))
+                {
+                    // 天井に当たっていることを示す
+                    onCeiling = true;
+
+                    // velocityを0に
+                    velocity = new();
+
+                    // めり込みの解消
+                    position = new(position.x, fieldBox.position.y - 1);
+                }
+            }
+        }
 
         private void CheckOnWall()
         {
