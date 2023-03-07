@@ -12,7 +12,7 @@ namespace ActionGameTest
         protected override void Start()
         {
             input = new();
-            player = new(input);
+            player = new(input, fieldBoxes);
         }
 
         protected override void FixedUpdate()
