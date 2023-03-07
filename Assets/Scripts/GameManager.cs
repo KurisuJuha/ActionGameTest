@@ -11,6 +11,7 @@ namespace ActionGameTest
         private Player player;
         private GameInput input;
 
+        [SerializeField] private Transform playerTransform;
 
         protected override void Start()
         {
@@ -22,6 +23,12 @@ namespace ActionGameTest
         {
             input.Update();
             player.Update();
+
+            SetView();
+
+        private void SetView()
+        {
+            playerTransform.position = player.position + new Vector2(0.5f, 0.5f);
         }
     }
 }
