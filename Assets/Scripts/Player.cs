@@ -29,6 +29,15 @@ namespace ActionGameTest
         public void Update()
         {
             AddGravityToVelocity();
+            Move();
+
+        private void Move()
+        {
+            float inputVec = (input.left ? -1 : 0) + (input.right ? 1 : 0);
+            position += new Vector2(1, 0) * inputVec * moveSpeed;
+
+            if (onGround && input.upDown) velocity = new Vector2(0, 1) * jumpPower;
+        }
 
 
         private void AddGravityToVelocity()
