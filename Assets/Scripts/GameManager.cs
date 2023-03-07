@@ -12,6 +12,7 @@ namespace ActionGameTest
         private GameInput input;
 
         [SerializeField] private Transform playerTransform;
+        [SerializeField] private Transform[] fieldTransforms;
 
         protected override void Start()
         {
