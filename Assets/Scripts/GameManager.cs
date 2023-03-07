@@ -9,7 +9,8 @@ namespace ActionGameTest
     {
         private Box[] fieldBoxes;
         private Player player;
-        private Input input;
+        private GameInput input;
+
 
         protected override void Start()
         {
