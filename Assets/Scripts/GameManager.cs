@@ -15,6 +15,7 @@ namespace ActionGameTest
 
         protected override void Start()
         {
+            RegisterFieldBoxes();
             input = new();
             player = new(input, fieldBoxes);
         }
@@ -25,6 +26,17 @@ namespace ActionGameTest
             player.Update();
 
             SetView();
+        private void RegisterFieldBoxes()
+        {
+            List<Box> boxes = new();
+
+            foreach (var fieldTransform in fieldTransforms)
+            {
+                boxes.Add(new(fieldTransform.position - fieldTransform.localScale / 2f, fieldTransform.localScale));
+            }
+
+            fieldBoxes = boxes.ToArray();
+        }
 
         private void SetView()
         {
