@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ActionGameTest.Physics
 {
-    public class BoxCollider
+    public class Box
     {
         /// <summary>
         /// 左下の位置
@@ -12,7 +12,7 @@ namespace ActionGameTest.Physics
         public readonly Vector2 halfSize;
         public readonly Vector2 centerPosition;
 
-        public BoxCollider(Vector2 position, Vector2 size)
+        public Box(Vector2 position, Vector2 size)
         {
             this.position = position;
             this.size = size;
@@ -20,7 +20,7 @@ namespace ActionGameTest.Physics
             this.centerPosition = position + size / 2f;
         }
 
-        public bool IsHit(BoxCollider otherCollider)
+        public bool IsHit(Box otherCollider)
         {
             // x
             if (Mathf.Abs(centerPosition.x - otherCollider.centerPosition.x) > (halfSize.x + otherCollider.halfSize.x)) return false;
