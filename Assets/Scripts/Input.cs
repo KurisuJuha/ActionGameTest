@@ -16,11 +16,16 @@ namespace ActionGameTest
         public bool leftUp { get; private set; }
         public bool leftDown { get; private set; }
 
+        public bool jump { get; private set; }
+        public bool jumpUp { get; private set; }
+        public bool jumpDown { get; private set; }
+
         public void Update()
         {
             bool newUp = false;
             bool newRight = false;
             bool newLeft = false;
+            bool newJump = false;
 
             newUp |= Input.GetKey(KeyCode.UpArrow);
             newUp |= Input.GetKey(KeyCode.W);
@@ -28,6 +33,7 @@ namespace ActionGameTest
             newRight |= Input.GetKey(KeyCode.D);
             newLeft |= Input.GetKey(KeyCode.LeftArrow);
             newLeft |= Input.GetKey(KeyCode.A);
+            newJump |= Input.GetKey(KeyCode.Z);
 
             upUp = up && !newUp;
             upDown = !up && newUp;
@@ -35,10 +41,13 @@ namespace ActionGameTest
             rightDown = !right && newRight;
             leftUp = left && !newLeft;
             leftDown = !left && newLeft;
+            jumpUp = jump && !newJump;
+            jumpDown = !jump && newJump;
 
             up = newUp;
             right = newRight;
             left = newLeft;
+            jump = newJump;
         }
     }
 }

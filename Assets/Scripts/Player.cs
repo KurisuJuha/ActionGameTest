@@ -16,15 +16,19 @@ namespace ActionGameTest
         private bool onGround;
         private bool onLeftWall;
         private bool onRightWall;
-        private Vector2 velocity;
+        private int wallJumpDirection;
+        private float gravityVelocity;
+        private double wallJumpStartTime;
         private double lastJumpButtonDownTime;
         private double lastOnGroundTime;
 
-        private const float gravityScale = 0.03f;
-        private const float moveSpeed = 0.2f;
-        private const float jumpPower = 0.4f;
-        private const double jumpBuffer = 0.15f;
-        private const double coyoteTimeRange = 0.1f;
+        private const float gravityScale = 0.02f;
+        private const float moveSpeed = 0.15f;
+        private const float jumpPower = 0.3f;
+        private const double jumpBuffer = 0.18f;
+        private const double coyoteTimeLength = 0.2f;
+        private const double wallJumpTimeLength = 0.3f;
+        private const float wallHangingFallSpeed = 0.1f;
 
         public Player(GameInput input, Box[] fieldBoxes)
         {
@@ -37,6 +41,7 @@ namespace ActionGameTest
         {
             AddGravityToVelocity();
             Move();
+            WallJump();
             CheckOnWall();
             ApplyVelocity();
             CheckOnGround();
@@ -57,8 +62,8 @@ namespace ActionGameTest
                     coyoteTime = true;
                     lastOnGroundTime = Time.fixedTimeAsDouble;
 
-                    // velocityを0に
-                    velocity = new();
+                    // gravityVelocityを0に
+                    gravityVelocity = 0;
 
                     // めり込みの解消
                     position = new(position.x, fieldBox.position.y + fieldBox.size.y);
@@ -69,8 +74,8 @@ namespace ActionGameTest
                     // 天井に当たっていることを示す
                     onCeiling = true;
 
-                    // velocityを0に
-                    velocity = new();
+                    // gravityVelocityを0に
+                    gravityVelocity = 0;
 
                     // めり込みの解消
                     position = new(position.x, fieldBox.position.y - 1);
@@ -80,6 +85,8 @@ namespace ActionGameTest
 
         private void CheckOnWall()
         {
+            onRightWall = false;
+            onLeftWall = false;
             Box leftBox = new(position + new Vector2(0, 0.05f), new(0, 0.8f));
             Box rightBox = new(position + new Vector2(1, 0.05f), new(0, 0.8f));
 
@@ -88,7 +95,7 @@ namespace ActionGameTest
                 if (fieldBox.IsHit(leftBox))
                 {
                     // 左壁に当たっていることを示す
-                    onRightWall = true;
+                    onLeftWall = true;
 
                     // めり込みの解消
                     position = new(fieldBox.position.x + fieldBox.size.x, position.y);
@@ -97,7 +104,7 @@ namespace ActionGameTest
                 if (fieldBox.IsHit(rightBox))
                 {
                     // 右壁に当たっていることを示す
-                    onLeftWall = true;
+                    onRightWall = true;
 
                     // めり込みの解消
                     position = new(fieldBox.position.x - 1, position.y);
@@ -109,20 +116,23 @@ namespace ActionGameTest
 
         private void Move()
         {
-            float inputVec = (input.left ? -1 : 0) + (input.right ? 1 : 0);
+            if ((Time.fixedTimeAsDouble - wallJumpStartTime) < wallJumpTimeLength) return;
+
+            int inputVec = (input.left ? -1 : 0) + (input.right ? 1 : 0);
             position += new Vector2(1, 0) * inputVec * moveSpeed;
 
             // ボタンが押されたら押されたタイミングを記録しておく
-            if (input.upDown)
+            if (input.jumpDown)
             {
                 lastJumpButtonDownTime = Time.fixedTimeAsDouble;
                 jumpBuffering = true;
             }
+            if (input.jumpUp) jumpBuffering = false;
 
             // 地面に触れている かつ ボタンを押されたタイミングが猶予いないなら jumpを呼ぶ
             if (jumpBuffering && coyoteTime
                 && (Time.fixedTimeAsDouble - lastJumpButtonDownTime) < jumpBuffer
-                && (Time.fixedTimeAsDouble - lastOnGroundTime) < coyoteTimeRange)
+                && (Time.fixedTimeAsDouble - lastOnGroundTime) < coyoteTimeLength)
             {
                 jumpBuffering = false;
                 coyoteTime = false;
@@ -132,17 +142,48 @@ namespace ActionGameTest
 
         private void ApplyVelocity()
         {
-            position += velocity;
+            position += new Vector2(0, gravityVelocity);
         }
 
         private void AddGravityToVelocity()
         {
-            velocity -= new Vector2(0, gravityScale);
+            gravityVelocity -= gravityScale;
+        }
+
+        private void WallJump()
+        {
+            int inputVec = (input.left ? -1 : 0) + (input.right ? 1 : 0);
+
+            if ((onLeftWall || onRightWall) && !onGround)
+            {
+                // 左右キーのどちらかを押している かつ velocityが下向き なら壁すべり状態にする
+                if (inputVec != 0 && gravityVelocity <= 0)
+                {
+                    gravityVelocity = 0;
+                    position -= new Vector2(0, wallHangingFallSpeed);
+                }
+
+                // 壁つかまり状態にジャンプボタンを押したら壁と逆向きの方向にジャンプ
+                if (input.jumpDown)
+                {
+                    wallJumpStartTime = Time.fixedTimeAsDouble;
+                    wallJumpDirection = -((onLeftWall ? -1 : 0) + (onRightWall ? 1 : 0));
+                    Jump();
+                }
+            }
+
+            // 実際に動かす
+            if ((Time.fixedTimeAsDouble - wallJumpStartTime) < wallJumpTimeLength)
+            {
+                // 逆向きの壁に当たっているならdirectionを0にする
+                if ((wallJumpDirection == -1 && onLeftWall) || (wallJumpDirection == 1 && onRightWall)) wallJumpDirection = 0;
+                position += new Vector2(moveSpeed * wallJumpDirection, 0);
+            }
         }
 
         private void Jump()
         {
-            velocity = new Vector2(0, 1) * jumpPower;
+            gravityVelocity = jumpPower;
         }
     }
 }
