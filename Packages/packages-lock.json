@@ -277,7 +277,7 @@
       "url": "https://package.openupm.com"
     },
     "jp.juhakurisu.popoutility": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
