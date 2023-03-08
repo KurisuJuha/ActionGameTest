@@ -23,7 +23,7 @@ namespace ActionGameTest
         private const float gravityScale = 0.03f;
         private const float moveSpeed = 0.2f;
         private const float jumpPower = 0.4f;
-        private const double jumpBuffer = 0.1f;
+        private const double jumpBuffer = 0.15f;
         private const double coyoteTimeRange = 0.1f;
 
         public Player(GameInput input, Box[] fieldBoxes)
