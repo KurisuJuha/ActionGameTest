@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using ActionGameTest.Physics;
+using JuhaKurisu.PopoTools.Utility;
 using UnityEngine;
 
 namespace ActionGameTest
@@ -9,21 +10,28 @@ namespace ActionGameTest
         public Vector2 position { get; private set; }
         private readonly GameInput input;
         private readonly ReadOnlyCollection<Box> fieldBoxes;
+        private readonly ActionForOnlyOnce jump;
         private bool onCeiling;
         private bool onGround;
         private bool onLeftWall;
         private bool onRightWall;
         private Vector2 velocity;
+        private double jumpButtonDownTime;
 
         private const float gravityScale = 0.03f;
         private const float moveSpeed = 0.2f;
         private const float jumpPower = 0.4f;
+        private const double jumpBuffer = 0.1f;
 
         public Player(GameInput input, Box[] fieldBoxes)
         {
             this.input = input;
             this.fieldBoxes = new(fieldBoxes);
             position = new(-0.5f, -0.5f);
+            jump = new(() =>
+            {
+                velocity = new Vector2(0, 1) * jumpPower;
+            });
         }
 
         public void Update()
@@ -96,7 +104,6 @@ namespace ActionGameTest
             }
 
             onGround = false;
-
         }
 
         private void Move()
@@ -104,7 +111,15 @@ namespace ActionGameTest
             float inputVec = (input.left ? -1 : 0) + (input.right ? 1 : 0);
             position += new Vector2(1, 0) * inputVec * moveSpeed;
 
-            if (onGround && input.upDown) velocity = new Vector2(0, 1) * jumpPower;
+            // ボタンが押されたら押されたタイミングを記録しておく
+            if (input.upDown)
+            {
+                jumpButtonDownTime = Time.fixedTimeAsDouble;
+                jump.Reset();
+            }
+
+            // 地面に触れている かつ ボタンを押されたタイミングが猶予いないなら jumpを呼ぶ
+            if (onGround && (Time.fixedTimeAsDouble - jumpButtonDownTime) < jumpBuffer) jump.Invoke();
         }
 
         private void ApplyVelocity()
