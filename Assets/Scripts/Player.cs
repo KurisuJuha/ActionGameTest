@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using ActionGameTest.Physics;
-using JuhaKurisu.PopoTools.Extentions;
 using UnityEngine;
 
 namespace ActionGameTest
