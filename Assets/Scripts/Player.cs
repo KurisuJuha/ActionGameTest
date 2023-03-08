@@ -120,7 +120,6 @@ namespace ActionGameTest
             }
 
             // 地面に触れている かつ ボタンを押されたタイミングが猶予いないなら jumpを呼ぶ
-            (Time.fixedTimeAsDouble - lastOnGroundTime).Inspect();
             if (jumpBuffering && coyoteTime
                 && (Time.fixedTimeAsDouble - lastJumpButtonDownTime) < jumpBuffer
                 && (Time.fixedTimeAsDouble - lastOnGroundTime) < coyoteTimeRange)
